@@ -69,10 +69,6 @@ class JsonSerializer<T>
 						{
 							serializeClass(cast c, value);
 						}
-						else
-						{
-							serializeObject(value);
-						}
 				}
 
 			case TEnum(e):
