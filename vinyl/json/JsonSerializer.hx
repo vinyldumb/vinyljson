@@ -40,7 +40,7 @@ class JsonSerializer<T>
 		_level = 0;
 	}
 
-	private function serializeValue(value:T)
+	private function serializeValue(value:Dynamic)
 	{
 		switch Type.typeof(value) {
 			case TNull:
