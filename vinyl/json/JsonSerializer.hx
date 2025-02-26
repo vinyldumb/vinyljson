@@ -52,24 +52,17 @@ class JsonSerializer<T>
 			case TObject:
 				serializeObject(value);
 
-			case TClass(c):
-				switch c
-				{
-					case String:
-						_buffer.add('"$value"');
+			case TClass(String):
+				_buffer.add('"$value"');
 
-					case Array:
-						serializeArray(cast value);
+			case TClass(Array):
+				serializeArray(cast value);
 
-					case haxe.ds.StringMap:
-						serializeStringMap(cast value);
+			case TClass(haxe.ds.StringMap):
+				serializeStringMap(cast value);
 
-					case _:
-						if (Rtti.hasRtti(c))
-						{
-							serializeClass(cast c, value);
-						}
-				}
+			case TClass(c) if (Rtti.hasRtti(c)):
+				serializeClass(cast c, value);
 
 			case TEnum(e):
 				serializeEnum(cast e, cast value);
