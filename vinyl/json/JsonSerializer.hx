@@ -28,8 +28,16 @@ class JsonSerializer
 		return this;
 	}
 
-	public function getJson():String {
+	public function getJson():String
+	{
 		return _buf.toString();
+	}
+
+	public function dispose()
+	{
+		_buf = null;
+		_spc = null;
+		_lvl = 0;
 	}
 
 	private function serializeValue<T>(value:T)
