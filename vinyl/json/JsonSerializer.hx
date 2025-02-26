@@ -5,23 +5,23 @@ import haxe.ds.StringMap;
 import haxe.rtti.CType.ClassField;
 import haxe.rtti.Rtti;
 
-class JsonSerializer
+class JsonSerializer<T>
 {
-	private var _buf:StringBuf;
+	private var _buffer:StringBuf;
 
-	private var _spc:String;
+	private var _space:String;
 
-	private var _lvl:Int;
+	private var _level:Int;
 
 	public function new(?space:String)
 	{
-		_spc = space;
+		_space = space;
 	}
 
-	public function serialize<T>(input:T):JsonSerializer
+	public function serialize(input:T):JsonSerializer<T>
 	{
-		_buf = new StringBuf();
-		_lvl = 0;
+		_buffer = new StringBuf();
+		_level = 0;
 
 		serializeValue(input);
 
@@ -30,24 +30,24 @@ class JsonSerializer
 
 	public function getJson():String
 	{
-		return _buf.toString();
+		return _buffer.toString();
 	}
 
 	public function dispose()
 	{
-		_buf = null;
-		_spc = null;
-		_lvl = 0;
+		_buffer = null;
+		_space = null;
+		_level = 0;
 	}
 
-	private function serializeValue<T>(value:T)
+	private function serializeValue(value:T)
 	{
 		switch Type.typeof(value) {
 			case TNull:
-				_buf.add('null');
+				_buffer.add('null');
 			
 			case TInt | TFloat | TBool:
-				_buf.add(Std.string(value));
+				_buffer.add(Std.string(value));
 
 			case TObject:
 				serializeObject(value);
@@ -56,7 +56,7 @@ class JsonSerializer
 				switch c
 				{
 					case String:
-						_buf.add('"$value"');
+						_buffer.add('"$value"');
 
 					case Array:
 						serializeArray(cast value);
@@ -67,7 +67,7 @@ class JsonSerializer
 					case _:
 						if (Rtti.hasRtti(c))
 						{
-							serializeClass(c, value);
+							serializeClass(cast c, value);
 						}
 						else
 						{
@@ -76,7 +76,7 @@ class JsonSerializer
 				}
 
 			case TEnum(e):
-				serializeEnum(e, cast value);
+				serializeEnum(cast e, cast value);
 
 			case t:
 				throw 'Unsupported value type $t';
@@ -89,48 +89,48 @@ class JsonSerializer
 
 		if (fields.length == 0)
 		{
-			_buf.add('{}');
+			_buffer.add('{}');
 			return;
 		}
 		
-		_buf.addChar('{'.code);
-		_lvl++;
+		_buffer.addChar('{'.code);
+		_level++;
 		addSpace();
 
 		for (i => name in fields)
 		{
 			final value = Reflect.field(value, name);
 
-			_buf.add('"$name":');
+			_buffer.add('"$name":');
 			if (isPretty())
 			{
-				_buf.addChar(' '.code);
+				_buffer.addChar(' '.code);
 			}
 
 			serializeValue(value);
 
 			if (i < fields.length - 2)
 			{
-				_buf.addChar(','.code);
+				_buffer.addChar(','.code);
 				addSpace();
 			}
 		}
 
-		_lvl--;
+		_level--;
 		addSpace();
-		_buf.addChar('}'.code);
+		_buffer.addChar('}'.code);
 	}
 
-	private function serializeArray<T>(value:Array<T>)
+	private function serializeArray(value:Array<T>)
 	{
 		if (value.length == 0)
 		{
-			_buf.add('[]');
+			_buffer.add('[]');
 			return;
 		}
 
-		_buf.addChar('['.code);
-		_lvl++;
+		_buffer.addChar('['.code);
+		_level++;
 		addSpace();
 
 		for (i => element in value)
@@ -139,67 +139,67 @@ class JsonSerializer
 
 			if (i < value.length - 2)
 			{
-				_buf.addChar(','.code);
+				_buffer.addChar(','.code);
 				addSpace();
 			}
 		}
 
-		_lvl--;
+		_level--;
 		addSpace();
-		_buf.addChar(']'.code);
+		_buffer.addChar(']'.code);
 	}
 
-	private function serializeStringMap<T>(value:StringMap<T>)
+	private function serializeStringMap(value:StringMap<T>)
 	{
 		final keys = [for (key in value.keys()) key];
 
 		if (keys.length == 0)
 		{
-			_buf.add('{}');
+			_buffer.add('{}');
 			return;
 		}
 		
-		_buf.addChar('{'.code);
-		_lvl++;
+		_buffer.addChar('{'.code);
+		_level++;
 		addSpace();
 
 		for (i => key in keys)
 		{
 			final value = value.get(key);
 
-			_buf.add('"$key":');
+			_buffer.add('"$key":');
 			if (isPretty())
 			{
-				_buf.addChar(' '.code);
+				_buffer.addChar(' '.code);
 			}
 
 			serializeValue(value);
 
 			if (i < keys.length - 2)
 			{
-				_buf.addChar(','.code);
+				_buffer.addChar(','.code);
 				addSpace();
 			}
 		}
 
-		_lvl--;
+		_level--;
 		addSpace();
-		_buf.addChar('}'.code);
+		_buffer.addChar('}'.code);
 	}
 
-	private function serializeClass<T>(c:Class<T>, value:T)
+	private function serializeClass(c:Class<T>, value:T)
 	{
 		final def = Rtti.getRtti(c);
 		final fields = def.fields.filter(field -> !shouldIgnore(field));
 
 		if (fields.length == 0)
 		{
-			_buf.add('{}');
+			_buffer.add('{}');
 			return;
 		}
 		
-		_buf.addChar('{'.code);
-		_lvl++;
+		_buffer.addChar('{'.code);
+		_level++;
 		addSpace();
 
 		for (i => field in fields)
@@ -212,59 +212,59 @@ class JsonSerializer
 			final name = getFieldJsonName(field);
 			final value = Reflect.getProperty(value, field.name);
 
-			_buf.add('"$name":');
+			_buffer.add('"$name":');
 			if (isPretty())
 			{
-				_buf.addChar(' '.code);
+				_buffer.addChar(' '.code);
 			}
 
 			serializeValue(value);
 
 			if (i < fields.length - 2)
 			{
-				_buf.addChar(','.code);
+				_buffer.addChar(','.code);
 				addSpace();
 			}
 		}
 
-		_lvl--;
+		_level--;
 		addSpace();
-		_buf.addChar('}'.code);
+		_buffer.addChar('}'.code);
 	}
 
-	private function serializeEnum<T>(e:Enum<T>, value:EnumValue)
+	private function serializeEnum(e:Enum<T>, value:EnumValue)
 	{
 		throw new haxe.exceptions.NotImplementedException('Enum values serialization not implemented');
 
-		/*_buf.addChar('"'.code);
+		/*_buffer.addChar('"'.code);
 
-		_buf.add(EnumValueTools.getName(value));
+		_buffer.add(EnumValueTools.getName(value));
 
 		final params = EnumValueTools.getParameters(value);
 		if (params.length > 0)
 		{
-			_buf.addChar('('.code);
+			_buffer.addChar('('.code);
 			for (param in params)
 			{
 				serializeValue(param);
 			}
-			_buf.addChar(')'.code);
+			_buffer.addChar(')'.code);
 		}
 		
-		_buf.addChar('"'.code);*/
+		_buffer.addChar('"'.code);*/
 	}
 
 	private function isPretty():Bool
 	{
-		return _spc != null;
+		return _space != null;
 	}
 
 	private function addSpace()
 	{
-		if (_spc != null)
+		if (_space != null)
 		{
-			_buf.addChar('\n'.code);
-			_buf.add([for (i in 0..._lvl) _spc].join(''));
+			_buffer.addChar('\n'.code);
+			_buffer.add([for (i in 0..._level) _space].join(''));
 		}
 	}
 

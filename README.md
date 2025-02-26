@@ -23,4 +23,4 @@ vinyl.json.VinylJson.serialize(obj);
 
 ### TODO
 
-- [ ] JSON Unserializer
+- [ ] JSON Unserializer (help me please 😭)
