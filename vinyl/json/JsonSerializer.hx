@@ -131,13 +131,13 @@ class JsonSerializer<T>
 
 		for (i => element in value)
 		{
-			serializeValue(element);
-
-			if (i < value.length - 1)
+			if (i > 0)
 			{
 				_buffer.addChar(','.code);
 				addSpace();
 			}
+			
+			serializeValue(element);
 		}
 
 		_level--;
@@ -161,6 +161,12 @@ class JsonSerializer<T>
 
 		for (i => key in keys)
 		{
+			if (i > 0)
+			{
+				_buffer.addChar(','.code);
+				addSpace();
+			}
+
 			final value = value.get(key);
 
 			_buffer.add('"$key":');
@@ -170,12 +176,6 @@ class JsonSerializer<T>
 			}
 
 			serializeValue(value);
-
-			if (i < keys.length - 1)
-			{
-				_buffer.addChar(','.code);
-				addSpace();
-			}
 		}
 
 		_level--;
@@ -205,6 +205,12 @@ class JsonSerializer<T>
 				continue;
 			}
 
+			if (i < fields.length - 1)
+			{
+				_buffer.addChar(','.code);
+				addSpace();
+			}
+
 			final name = getFieldJsonName(field);
 			final value = Reflect.getProperty(value, field.name);
 
@@ -215,12 +221,6 @@ class JsonSerializer<T>
 			}
 
 			serializeValue(value);
-
-			if (i < fields.length - 1)
-			{
-				_buffer.addChar(','.code);
-				addSpace();
-			}
 		}
 
 		_level--;
