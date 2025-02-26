@@ -1,3 +1,4 @@
+import vinyl.json.IJsonSerializable;
 import vinyl.json.VinylJson;
 
 enum TestEnum
@@ -8,8 +9,7 @@ enum TestEnum
 }
 
 @:structInit
-@:rtti
-class RttiSerializable
+class RttiSerializable implements IJsonSerializable
 {
 	@:json.property('not.str')
 	public var str:String;
