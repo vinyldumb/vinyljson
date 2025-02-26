@@ -1,0 +1,7 @@
+{
+	"name": "vinyljson",
+	"license": "BSD",
+	"releasenote": "serializer, json.ignore and json.property metadatas",
+	"contributors": ["vinyldumb"],
+	"version": "0.0.1"
+}

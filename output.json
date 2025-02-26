@@ -1,0 +1,20 @@
+{
+	"not.str": "cool string",
+	"boolean": true,
+	"arr": [
+		{
+			"not.str": "second cool string",
+			"boolean": false,
+			"arr": [],
+			"map": {}
+		}
+	],
+	"map": {
+		"cool": {
+			"not.str": "third cool string",
+			"boolean": true,
+			"arr": [],
+			"map": {}
+		}
+	}
+}
