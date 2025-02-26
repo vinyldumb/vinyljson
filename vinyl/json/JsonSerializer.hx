@@ -109,7 +109,7 @@ class JsonSerializer<T>
 
 			serializeValue(value);
 
-			if (i < fields.length - 2)
+			if (i < fields.length - 1)
 			{
 				_buffer.addChar(','.code);
 				addSpace();
@@ -137,7 +137,7 @@ class JsonSerializer<T>
 		{
 			serializeValue(element);
 
-			if (i < value.length - 2)
+			if (i < value.length - 1)
 			{
 				_buffer.addChar(','.code);
 				addSpace();
@@ -175,7 +175,7 @@ class JsonSerializer<T>
 
 			serializeValue(value);
 
-			if (i < keys.length - 2)
+			if (i < keys.length - 1)
 			{
 				_buffer.addChar(','.code);
 				addSpace();
@@ -220,7 +220,7 @@ class JsonSerializer<T>
 
 			serializeValue(value);
 
-			if (i < fields.length - 2)
+			if (i < fields.length - 1)
 			{
 				_buffer.addChar(','.code);
 				addSpace();

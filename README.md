@@ -18,7 +18,7 @@ var obj =
 	]
 }
 
-vinyl.json.VinylJson.serialize(obj);
+vinyl.json.VinylJson.serialize(obj); // {"map":{"key1":"hello there!"},"number":83.4,"string":"string value","boolean":true}
 ```
 
 ### TODO
