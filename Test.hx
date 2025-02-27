@@ -9,7 +9,7 @@ enum TestEnum
 }
 
 @:structInit
-class RttiSerializable implements IJsonSerializable
+class TestClass implements IJsonSerializable
 {
 	@:json.property('not.str')
 	public var str:String;
@@ -19,24 +19,24 @@ class RttiSerializable implements IJsonSerializable
 
 	public var boolean:Bool;
 
-	public var arr:Array<RttiSerializable>;
+	public var arr:Array<TestClass>;
 
-	public var map:Map<String, RttiSerializable>;
+	public var map:Map<String, TestClass>;
 	
 	// public var enm:TestEnum;
 }
 
 function main()
 {
-	var rttiObject:RttiSerializable =
+	var rttiObject:TestClass =
 	{
-		str: 'cool string',
+		str: 'best string',
 		num: 83.4,
 		boolean: true,
 		arr:
 		[
 			{
-				str: 'second cool string',
+				str: 'awesome string',
 				num: 33000.1,
 				boolean: false,
 				arr: [],
@@ -48,7 +48,7 @@ function main()
 		[
 			'cool' =>
 			{
-				str: 'third cool string',
+				str: 'another awesome string',
 				num: 2301.79,
 				boolean: true,
 				arr: [],
@@ -61,6 +61,11 @@ function main()
 
 	final json = VinylJson.serialize(rttiObject, '\t');
 
-	Sys.println(json);
-	sys.io.File.saveContent('output.json', json);
+	// Sys.println(json);
+	// sys.io.File.saveContent('output.json', json);
+
+	final json = sys.io.File.getContent('output.json');
+
+	Sys.println(json.substr(0, 74));
+	Sys.println(VinylJson.unserialize(json));
 }

@@ -1,5 +1,6 @@
 package vinyl.json;
 
+import vinyl.json._internal.Utils;
 import haxe.EnumTools.EnumValueTools;
 import haxe.ds.StringMap;
 import haxe.rtti.CType.ClassField;
@@ -88,6 +89,12 @@ class JsonSerializer<T>
 
 		for (i => name in fields)
 		{
+			if (i > 0)
+			{
+				_buffer.addChar(','.code);
+				addSpace();
+			}
+
 			final value = Reflect.field(value, name);
 
 			_buffer.add('"$name":');
@@ -97,12 +104,6 @@ class JsonSerializer<T>
 			}
 
 			serializeValue(value);
-
-			if (i < fields.length - 1)
-			{
-				_buffer.addChar(','.code);
-				addSpace();
-			}
 		}
 
 		_level--;
@@ -179,7 +180,10 @@ class JsonSerializer<T>
 	private function serializeClass(c:Class<T>, value:T)
 	{
 		final def = Rtti.getRtti(c);
-		final fields = def.fields.filter(field -> !shouldIgnore(field));
+		final fields = def.fields.filter(field -> {
+			!Utils.shouldIgnoreField(field)
+			&& !field.type.match(CFunction(_, _));
+		});
 
 		if (fields.length == 0)
 		{
@@ -193,18 +197,13 @@ class JsonSerializer<T>
 
 		for (i => field in fields)
 		{
-			if (field.type.match(CFunction(_, _)))
-			{
-				continue;
-			}
-
-			if (i < fields.length - 1)
+			if (i > 0)
 			{
 				_buffer.addChar(','.code);
 				addSpace();
 			}
 
-			final name = getFieldJsonName(field);
+			final name = Utils.getFieldJsonName(field);
 			final value = Reflect.getProperty(value, field.name);
 
 			_buffer.add('"$name":');
@@ -255,40 +254,5 @@ class JsonSerializer<T>
 			_buffer.addChar('\n'.code);
 			_buffer.add([for (i in 0..._level) _space].join(''));
 		}
-	}
-
-	private function shouldIgnore(field:ClassField):Bool
-	{
-		for (entry in field.meta)
-		{
-			if (entry.name == ':json.ignore')
-			{
-				return true;
-			}
-		}
-		return false;
-	}
-
-	private function getFieldJsonName(field:ClassField):String
-	{
-		var result = field.name;
-		for (entry in field.meta)
-		{
-			if (entry.name == ':json.property' && entry.params[0] != null)
-			{
-				var firstCharCode = entry.params[0].charCodeAt(0);
-				var quoted = firstCharCode == '"'.code || firstCharCode == '\''.code;
-
-				if (quoted)
-				{
-					result = entry.params[0].substr(1, entry.params[0].length - 2);
-				}
-				else
-				{
-					result = entry.params[0];
-				}
-			}
-		}
-		return result;
 	}
 }

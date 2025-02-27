@@ -1,11 +1,9 @@
 {
-	,
-	"not.str": "cool string",
+	"not.str": "best string",
 	"boolean": true,
 	"arr": [
 		{
-			,
-			"not.str": "second cool string",
+			"not.str": "awesome string",
 			"boolean": false,
 			"arr": [],
 			"map": {}
@@ -13,8 +11,7 @@
 	],
 	"map": {
 		"cool": {
-			,
-			"not.str": "third cool string",
+			"not.str": "another awesome string",
 			"boolean": true,
 			"arr": [],
 			"map": {}
