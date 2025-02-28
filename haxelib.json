@@ -3,5 +3,8 @@
 	"license": "BSD",
 	"releasenote": "serializer, json.ignore and json.property metadatas",
 	"contributors": ["vinyldumb"],
-	"version": "0.0.1"
+	"version": "0.0.1",
+	"dependencies": {
+		"hxjsonast": ""
+	}
 }

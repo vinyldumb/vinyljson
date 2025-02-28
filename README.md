@@ -27,6 +27,6 @@ Classes implementing IJsonSerializable can be serialized. Their fields can have 
 - @:json.ignore
 - @:json.property(name)
 
-### TODO
+## TODO
 
-- [ ] JSON Unserializer (help me please 😭)
+- haxe.ds.StringMap serialization

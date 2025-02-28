@@ -1,5 +1,5 @@
-import vinyl.json.IJsonSerializable;
 import vinyl.json.VinylJson;
+import vinyl.json.IJsonSerializable;
 
 enum TestEnum
 {
@@ -24,6 +24,11 @@ class TestClass implements IJsonSerializable
 	public var map:Map<String, TestClass>;
 	
 	// public var enm:TestEnum;
+
+	public function toString():String
+	{
+		return 'TestClass(str: $str | num: $num | boolean: $boolean | arr: $arr | map: $map)';
+	}
 }
 
 function main()
@@ -61,11 +66,8 @@ function main()
 
 	final json = VinylJson.serialize(rttiObject, '\t');
 
-	// Sys.println(json);
-	// sys.io.File.saveContent('output.json', json);
+	Sys.println(json);
+	sys.io.File.saveContent('output.json', json);
 
-	final json = sys.io.File.getContent('output.json');
-
-	Sys.println(json.substr(0, 74));
-	Sys.println(VinylJson.unserialize(json));
+	Sys.println(VinylJson.unserialize(json, TestClass));
 }

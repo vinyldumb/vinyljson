@@ -28,7 +28,7 @@ class Macros
 		return Context.getBuildFields();
 	}
 
-	public static macro function buildSerializable():Array<Field>
+	public static macro function addRtti():Array<Field>
 	{
 		final classRef = Context.getLocalClass();
 

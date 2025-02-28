@@ -1,54 +1,51 @@
 package vinyl.json._internal;
 
+import vinyl.json.exceptions.ParamException;
 import haxe.rtti.CType.ClassField;
+
+using StringTools;
 
 class Utils
 {
-	public static function shouldIgnoreField(field:ClassField):Bool
+	public static function getClassFieldJsonProperty(cfield:ClassField):String
 	{
-		for (entry in field.meta)
+		var result = cfield.name;
+		
+		for (entry in cfield.meta)
 		{
-			if (entry.name == ':json.ignore')
+			if (entry.name == ':json.property')
 			{
-				return true;
-			}
-		}
-		return false;
-	}
-
-	public static function getFieldJsonName(field:ClassField):String
-	{
-		var result = field.name;
-		for (entry in field.meta)
-		{
-			if (entry.name == ':json.property' && entry.params[0] != null)
-			{
-				var firstCharCode = entry.params[0].charCodeAt(0);
-				var quoted = firstCharCode == '"'.code || firstCharCode == '\''.code;
-
-				if (quoted)
+				result = entry.params[0];
+				if ((result.startsWith('"') && result.endsWith('"')) || (result.startsWith('\'') && result.endsWith('\'')))
 				{
-					result = entry.params[0].substr(1, entry.params[0].length - 2);
-				}
-				else
-				{
-					result = entry.params[0];
+					result = result.substr(1, result.length - 2);
 				}
 			}
 		}
+
+		if (result.contains('"'))
+		{
+			throw new ParamException(0, 'Invalid param 0: $result');
+		}
+
 		return result;
 	}
 
-	private static var _IGNORED_CHAR_CODES =
-	[
-		' '.code,
-		'\r'.code,
-		'\n'.code,
-		'\t'.code
-	];
-
-	public static function isIgnoredCharCode(charCode:Int):Bool
+	public static function filterClassFields(cfield:ClassField):Bool
 	{
-		return _IGNORED_CHAR_CODES.contains(charCode);
+		if (cfield.type.match(CFunction(_, _)))
+		{
+			return false;
+		}
+
+		for (entry in cfield.meta)
+		{
+			if (entry.name == ':json.ignore')
+			{
+				return false;
+			}
+		}
+
+		return true;
 	}
 }
