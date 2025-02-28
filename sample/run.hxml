@@ -1,0 +1,5 @@
+--main Main
+--library vinyljson
+--interp
+
+--define no-deprecation-warnings

@@ -106,22 +106,22 @@ class JsonToValueConverter
 				}
 				return null;
 
-			case TInt:
-				if (!ctype.match(CAbstract('Int', _)))
-				{
-					throw new ArgumentException('input', 'Invalid input type $type');
-				}
-				return Math.floor(input);
-
 			case TFloat:
-				if (!ctype.match(CAbstract('Float', _)) && !ctype.match(CAbstract('Single', _)))
+				if (ctype.match(CAbstract('Int', [])))
+				{
+					return Math.floor(input);
+				}
+				else if (ctype.match(CAbstract('Float', [])) || ctype.match(CAbstract('Single', [])))
+				{
+					return input;
+				}
+				else
 				{
 					throw new ArgumentException('input', 'Invalid input type $type');
 				}
-				return input;
 
 			case TBool:
-				if (!ctype.match(CAbstract('Bool', _)))
+				if (!ctype.match(CAbstract('Bool', [])))
 				{
 					throw new ArgumentException('input', 'Invalid input type $type');
 				}
@@ -135,7 +135,7 @@ class JsonToValueConverter
 						for (field in Reflect.fields(input))
 						{
 							final value = Reflect.field(input, field);
-							result.set(field, value);
+							result.set(field, convertValue(paramCType, value));
 						}
 						return result;
 
@@ -170,19 +170,19 @@ class JsonToValueConverter
 
 	private static function isNullableType(ctype:CType):Bool
 	{
-		if (ctype.match(CAbstract('Float', _)))
+		if (ctype.match(CAbstract('Float', [])))
 		{
 			return false;
 		}
-		else if (ctype.match(CAbstract('Int', _)))
+		else if (ctype.match(CAbstract('Int', [])))
 		{
 			return false;
 		}
-		else if (ctype.match(CAbstract('Single', _)))
+		else if (ctype.match(CAbstract('Single', [])))
 		{
 			return false;
 		}
-		else if (ctype.match(CAbstract('Bool', _)))
+		else if (ctype.match(CAbstract('Bool', [])))
 		{
 			return false;
 		}
